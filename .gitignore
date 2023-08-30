@@ -1,5 +1,5 @@
+.cache
 .vscode
 .DS_Store
 
-legacy
-target
+build
