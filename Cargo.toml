@@ -9,4 +9,13 @@ repository = "https://github.com/AsherJingkongChen/glass-rs.git"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-path = "src/lib.rs"
+path = "src/web/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+js-sys = "0.3.64"
+speedy = "0.8.6"
+
+[dependencies.wasm-bindgen]
+version = "0.2.87"
+default-features = false
