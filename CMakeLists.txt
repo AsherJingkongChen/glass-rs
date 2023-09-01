@@ -1,30 +1,40 @@
-cmake_minimum_required (VERSION 3.5)
+cmake_minimum_required(VERSION 3.18)
+
 project(glass LANGUAGES CXX)
-
-add_library(glass INTERFACE)
-target_include_directories(glass INTERFACE .) 
-
-set(CXX_STANDARD 20)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-SET(CMAKE_CXX_FLAGS " \
-  -std=c++20 \
-  -Wall -Wextra \
-  -g \
-  -lrt \
-  -lembind \
-  -fpic \
-  -ftree-vectorize \
-")
+# build/glass.js
+add_executable(glass glass.cc)
+set_target_properties(glass PROPERTIES CXX_STANDARD 20)
+set_target_properties(glass PROPERTIES SUFFIX .js)
+target_compile_options(glass PUBLIC
+  -g
+  -fPIC
+  -Wall -Wextra
+)
+target_include_directories(glass PUBLIC .) 
+target_link_libraries(glass PUBLIC embind)
+target_link_options(glass PUBLIC
+  -sALLOW_MEMORY_GROWTH
+  -sNO_DISABLE_EXCEPTION_CATCHING
+  -sENVIRONMENT=web
+  -sNO_EXPORT_ES6
+  -sFETCH
+  -sMODULARIZE
+  -sWASM
+  --oformat=mjs
+)
 
-add_executable(main main.cc)
-set_target_properties(main PROPERTIES LINK_FLAGS " \
-  -s ENVIRONMENT=web \
-  -s FETCH=1 \
-  -s WASM=1 \
-  -s MODULARIZE=1 \
-  -s EXPORT_ES6=1 \
-  --oformat=mjs \
-")
-target_link_libraries(main glass)
+# build/glass.d.ts
+add_custom_command(
+  TARGET glass
+  POST_BUILD
+  COMMAND
+    ${CMAKE_CXX_COMPILER}
+    -lembind
+    -I${CMAKE_SOURCE_DIR}
+    --embind-emit-tsd=${CMAKE_BINARY_DIR}/glass.d.ts
+    -sNO_WARN_ON_UNDEFINED_SYMBOLS
+    ${CMAKE_SOURCE_DIR}/glass.cc
+)
