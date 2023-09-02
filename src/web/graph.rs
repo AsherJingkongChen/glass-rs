@@ -3,8 +3,9 @@ use speedy::{Readable, Writable};
 
 /// data is an `n * k` matrix
 /// dims is (n, k)
+/// *A Concrete Builder and HNSWInitializer*
 #[wasm_bindgen]
-#[derive(Readable, Writable)]
+#[derive(Clone, Readable, Writable)]
 pub struct Graph {
   data: Box<[i32]>,
   eps: Vec<i32>,
